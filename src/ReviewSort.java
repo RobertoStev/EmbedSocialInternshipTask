@@ -2,9 +2,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -325,5 +329,52 @@ public class ReviewSort {
     }
     public ReviewSort(){
         List<Review> list = readJSON();
+
+        List<Review> list2 = new ArrayList<>();
+
+        filterButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Comparator<Review> comparator = null;
+
+                String comboBox1Selected = comboBox1.getSelectedItem().toString();
+                String comboBox3Selected = comboBox3.getSelectedItem().toString();
+                String comboBox4Selected = comboBox4.getSelectedItem().toString();
+
+                if(comboBox4Selected.equals("No")){
+                    if(comboBox1Selected.equals("Lowest First") && comboBox3Selected.equals("Oldest First"))
+                        comparator = Comparator.comparing(Review::getRating).thenComparing(Review::getReviewCreatedOnDate);
+                    else if(comboBox1Selected.equals("Highest First") && comboBox3Selected.equals("Oldest First"))
+                        comparator = Comparator.comparing(Review::getRating).reversed().thenComparing(Review::getReviewCreatedOnDate);
+                    else if(comboBox1Selected.equals("Lowest First") && comboBox3Selected.equals("Newest First"))
+                        comparator = (Comparator.comparing(Review::getRating).reversed().thenComparing(Review::getReviewCreatedOnDate)).reversed();
+                    else
+                        comparator = Comparator.comparing(Review::getRating).thenComparing(Review::getReviewCreatedOnDate).reversed();
+                }
+                else{
+                    if(comboBox1Selected.equals("Lowest First") && comboBox3Selected.equals("Oldest First"))//reviews with reviewText are not sorted correctly
+                        comparator = Comparator.comparing(Review::getReviewText).reversed().thenComparing(Review::getRating).thenComparing(Review::getReviewCreatedOnDate);
+                    else if(comboBox1Selected.equals("Highest First") && comboBox3Selected.equals("Oldest First"))
+                        comparator = Comparator.comparing(Review::getReviewText).thenComparing(Review::getRating).reversed().thenComparing(Review::getReviewCreatedOnDate);
+                    else if(comboBox1Selected.equals("Lowest First") && comboBox3Selected.equals("Newest First"))//reviews with reviewText are not sorted correctly
+                        comparator = (Comparator.comparing(Review::getReviewText).reversed().thenComparing(Review::getRating).reversed().thenComparing(Review::getReviewCreatedOnDate)).reversed();
+                    else
+                        comparator = Comparator.comparing(Review::getReviewText).thenComparing(Review::getRating).thenComparing(Review::getReviewCreatedOnDate).reversed();
+                }
+                list.sort(comparator);
+
+                String minimumRating = comboBox2.getSelectedItem().toString();
+                for(Review review: list) {
+                    int reviewRating = review.getRating();
+                    if(Integer.toString(reviewRating).compareTo(minimumRating) >= 0){
+                        list2.add(review);
+                    }
+                }
+
+                for(Review review: list2){
+                    System.out.println(review);
+                }
+            }
+        });
     }
 }
