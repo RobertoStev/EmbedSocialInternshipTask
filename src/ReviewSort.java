@@ -1,6 +1,13 @@
-import javax.swing.*;
-import java.util.Arrays;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.swing.*;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Review{
     private long id;
     private String reviewId;
@@ -305,5 +312,18 @@ public class ReviewSort {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(800,300,400,400);
         frame.setVisible(true);
+    }
+
+    public List<Review> readJSON(){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            List<Review> reviews = Arrays.asList(mapper.readValue(Paths.get("src/reviews.json").toFile(), Review[].class));
+            return reviews;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public ReviewSort(){
+        List<Review> list = readJSON();
     }
 }
