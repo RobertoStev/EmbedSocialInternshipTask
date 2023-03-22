@@ -12,4 +12,13 @@ public class ReviewSort {
     private JComboBox comboBox4;
     private JLabel label5;
     private JButton filterButton;
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("SortReviews");
+        ReviewSort reviewSort = new ReviewSort();
+        frame.setContentPane(reviewSort.main);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setBounds(800,300,400,400);
+        frame.setVisible(true);
+    }
 }
